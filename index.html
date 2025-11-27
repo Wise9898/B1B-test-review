@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B1B English Test Review</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .option-btn {
+            transition: all 0.2s;
+        }
+
+        .option-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Custom Scrollbar for review section */
+        .review-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .review-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        .review-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        .review-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 h-screen flex flex-col overflow-hidden">
+
+    <!-- Header -->
+    <header class="bg-blue-600 text-white p-4 shadow-md z-10">
+        <div class="max-w-3xl mx-auto flex justify-between items-center">
+            <h1 class="font-bold text-xl flex items-center gap-2">
+                <i class="fas fa-book-open"></i> <span class="hidden sm:inline">B1B Test Review</span><span class="sm:hidden">B1B</span>
+            </h1>
+            <div class="flex items-center gap-3">
+                <div id="score-display" class="hidden text-sm font-semibold bg-blue-700 px-3 py-1 rounded-full">
+                    Score: <span id="current-score">0</span>
+                </div>
+                <button onclick="resetApp()" class="bg-blue-700 hover:bg-blue-800 text-white w-9 h-9 rounded-full flex items-center justify-center transition shadow-sm border border-blue-500" title="Go Home">
+                    <i class="fas fa-home"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto relative w-full max-w-3xl mx-auto p-4 flex flex-col">
+        
+        <!-- Welcome Screen -->
+        <div id="start-screen" class="flex flex-col items-center justify-center flex-1 space-y-8 fade-in text-center my-auto">
+            <div class="space-y-4">
+                <div class="w-24 h-24 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto text-4xl shadow-sm">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-slate-800">Ready to Review?</h2>
+                <p class="text-slate-500 max-w-md mx-auto">
+                    Prepare for your B1B test with exercises covering Units 7-12: 
+                    <br><span class="text-sm font-mono text-blue-600 bg-blue-50 px-2 py-1 rounded mt-2 inline-block">Conditionals, Passives, Reported Speech, & more.</span>
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-md">
+                <button onclick="startQuiz('all')" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center gap-3">
+                    <i class="fas fa-play-circle text-xl"></i> Full Review (All Units)
+                </button>
+                <button onclick="showTopics()" class="bg-white hover:bg-slate-50 text-slate-700 border-2 border-slate-200 font-semibold py-4 px-6 rounded-xl shadow-sm transition transform hover:-translate-y-1 flex items-center justify-center gap-3">
+                    <i class="fas fa-list-ul text-xl"></i> Select Topics
+                </button>
+            </div>
+        </div>
+
+        <!-- Topic Selection Screen -->
+        <div id="topic-screen" class="hidden flex-col items-center justify-center flex-1 fade-in">
+            <h2 class="text-2xl font-bold mb-6 text-slate-800">Select a Unit</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-lg mb-6">
+                <button onclick="startQuiz('7')" class="p-4 bg-white border border-slate-200 rounded-lg hover:border-blue-500 hover:shadow-md transition text-left group">
+                    <span class="block text-xs font-bold text-blue-500 uppercase tracking-wider mb-1">Unit 7</span>
+                    <span class="font-semibold text-slate-700 group-hover:text-blue-600">Infinitives & Gerunds</span>
+                </button>
+                <button onclick="startQuiz('8')" class="p-4 bg-white border border-slate-200 rounded-lg hover:border-blue-500 hover:shadow-md transition text-left group">
+                    <span class="block text-xs font-bold text-blue-500 uppercase tracking-wider mb-1">Unit 8</span>
+                    <span class="font-semibold text-slate-700 group-hover:text-blue-600">Should & 1st Conditional</span>
+                </button>
+                <button onclick="startQuiz('9')" class="p-4 bg-white border border-slate-200 rounded-lg hover:border-blue-500 hover:shadow-md transition text-left group">
+                    <span class="block text-xs font-bold text-blue-500 uppercase tracking-wider mb-1">Unit 9</span>
+                    <span class="font-semibold text-slate-700 group-hover:text-blue-600">2nd Conditional & Present Perfect</span>
+                </button>
+                <button onclick="startQuiz('10')" class="p-4 bg-white border border-slate-200 rounded-lg hover:border-blue-500 hover:shadow-md transition text-left group">
+                    <span class="block text-xs font-bold text-blue-500 uppercase tracking-wider mb-1">Unit 10</span>
+                    <span class="font-semibold text-slate-700 group-hover:text-blue-600">Passives & Phrasal Verbs</span>
+                </button>
+                <button onclick="startQuiz('11')" class="p-4 bg-white border border-slate-200 rounded-lg hover:border-blue-500 hover:shadow-md transition text-left group">
+                    <span class="block text-xs font-bold text-blue-500 uppercase tracking-wider mb-1">Unit 11</span>
+                    <span class="font-semibold text-slate-700 group-hover:text-blue-600">Used To & So/Neither</span>
+                </button>
+                <button onclick="startQuiz('12')" class="p-4 bg-white border border-slate-200 rounded-lg hover:border-blue-500 hover:shadow-md transition text-left group">
+                    <span class="block text-xs font-bold text-blue-500 uppercase tracking-wider mb-1">Unit 12</span>
+                    <span class="font-semibold text-slate-700 group-hover:text-blue-600">Past Perfect & Reported Speech</span>
+                </button>
+            </div>
+            <button onclick="goHome()" class="text-slate-500 hover:text-slate-800 font-medium">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Home
+            </button>
+        </div>
+
+        <!-- Quiz Interface -->
+        <div id="quiz-screen" class="hidden flex-col max-w-2xl w-full mx-auto h-full justify-between pb-6 fade-in">
+            
+            <!-- Progress Bar -->
+            <div class="w-full bg-slate-200 h-2 rounded-full mb-6 mt-2">
+                <div id="progress-bar" class="bg-blue-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-4 flex-1 flex flex-col justify-center border border-slate-100">
+                <div class="flex justify-between items-start mb-4">
+                    <span id="q-category" class="text-xs font-bold text-blue-500 bg-blue-50 px-2 py-1 rounded uppercase tracking-wide">GRAMMAR</span>
+                    <span id="q-number" class="text-slate-400 text-sm font-medium">1/20</span>
+                </div>
+                
+                <h3 id="q-text" class="text-xl sm:text-2xl font-bold text-slate-800 mb-8 leading-relaxed">
+                    Question text goes here...
+                </h3>
+
+                <div id="options-container" class="space-y-3 w-full">
+                    <!-- Options injected here -->
+                </div>
+                
+                <!-- Feedback Area -->
+                <div id="feedback" class="hidden mt-6 p-4 rounded-xl border-l-4">
+                    <div class="flex items-start">
+                        <i id="feedback-icon" class="fas fa-check-circle mt-1 mr-3"></i>
+                        <div>
+                            <p id="feedback-title" class="font-bold"></p>
+                            <p id="feedback-text" class="text-sm mt-1 opacity-90"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="next-btn" onclick="nextQuestion()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-md transition hidden">
+                Next Question <i class="fas fa-arrow-right ml-2"></i>
+            </button>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden flex-col items-center justify-center flex-1 fade-in py-8">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-slate-800 mb-2">Review Complete!</h2>
+                <p class="text-slate-500">Here is how you did</p>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm text-center border border-slate-100 mb-8">
+                <div class="relative inline-block mb-6">
+                    <svg class="w-32 h-32 transform -rotate-90">
+                        <circle cx="64" cy="64" r="60" stroke="#f1f5f9" stroke-width="8" fill="transparent"/>
+                        <circle id="score-circle" cx="64" cy="64" r="60" stroke="#3b82f6" stroke-width="8" fill="transparent" stroke-dasharray="377" stroke-dashoffset="377" class="transition-all duration-1000 ease-out"/>
+                    </svg>
+                    <div class="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center">
+                        <span id="final-score" class="text-4xl font-bold text-slate-800">0%</span>
+                    </div>
+                </div>
+                <p id="final-msg" class="text-slate-600 font-medium">Great job!</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 w-full max-w-md">
+                <button onclick="resetApp()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-3 px-6 rounded-xl transition">
+                    <i class="fas fa-home mr-2"></i> Home
+                </button>
+                <button onclick="startQuiz(currentMode)" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition shadow-md">
+                    <i class="fas fa-redo mr-2"></i> Retry
+                </button>
+            </div>
+            
+            <div id="mistakes-container" class="w-full max-w-2xl mt-8 hidden">
+                <h3 class="font-bold text-slate-700 mb-4 px-2">Review Mistakes</h3>
+                <div id="mistakes-list" class="space-y-3 review-scroll max-h-60 overflow-y-auto">
+                    <!-- Mistakes injected here -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // --- Question Bank (Based on Uploaded Images) ---
+        const allQuestions = [
+            // UNIT 7: Infinitives & Gerunds (from image_a2855b.jpg)
+            {
+                id: '7-1', unit: '7', category: 'Infinitives',
+                text: "I know you're tired, but try ______ awake for the party.",
+                options: ["stay", "to stay", "staying"],
+                correct: 1,
+                explanation: "After 'try' (make an effort), we often use the infinitive with 'to'."
+            },
+            {
+                id: '7-2', unit: '7', category: 'Gerunds',
+                text: "I really enjoy ______ yoga. It makes me feel great!",
+                options: ["to do", "do", "doing"],
+                correct: 2,
+                explanation: "Enjoy is always followed by the gerund (-ing form)."
+            },
+            {
+                id: '7-3', unit: '7', category: 'Infinitives',
+                text: "It's normal ______ nervous before a presentation.",
+                options: ["to feel", "feeling", "feel"],
+                correct: 0,
+                explanation: "Adjectives like 'normal', 'hard', 'easy' are usually followed by an infinitive."
+            },
+            {
+                id: '7-4', unit: '7', category: 'Modifiers',
+                text: "You ______ to pay to get into the museum. It's free.",
+                options: ["don't have", "must not", "haven't"],
+                correct: 0,
+                explanation: "'Don't have to' means it's not necessary. 'Must not' means it's prohibited."
+            },
+            
+            // UNIT 8: Should & Conditionals (from image_a2853b.jpg)
+            {
+                id: '8-1', unit: '8', category: 'Should',
+                text: "You ______ drink so much coffee. It's not good for you.",
+                options: ["should", "shouldn't", "don't have to"],
+                correct: 1,
+                explanation: "We use 'shouldn't' to give advice about something negative."
+            },
+            {
+                id: '8-2', unit: '8', category: '1st Conditional',
+                text: "If you leave now, you ______ the 8:00 train.",
+                options: ["catch", "caught", "'ll catch"],
+                correct: 2,
+                explanation: "First Conditional: If + Present Simple, ... will + infinitive."
+            },
+            {
+                id: '8-3', unit: '8', category: 'Possessive Pronouns',
+                text: "This isn't my pen, it's Susan's. It's ______.",
+                options: ["her", "hers", "she's"],
+                correct: 1,
+                explanation: "Possessive pronouns (mine, yours, hers) replace the noun phrase."
+            },
+
+            // UNIT 9: 2nd Conditional & Present Perfect (from image_a28517.jpg)
+            {
+                id: '9-1', unit: '9', category: '2nd Conditional',
+                text: "If I ______ a good job, I'd move to the US.",
+                options: ["find", "found", "would find"],
+                correct: 1,
+                explanation: "Second Conditional: If + Past Simple, ... would + infinitive. (Imaginary situation)."
+            },
+            {
+                id: '9-2', unit: '9', category: '2nd Conditional',
+                text: "I ______ buy that car if I were you.",
+                options: ["wouldn't", "didn't", "won't"],
+                correct: 0,
+                explanation: "We use 'I wouldn't...' to give advice in hypothetical situations."
+            },
+            {
+                id: '9-3', unit: '9', category: 'Present Perfect',
+                text: "How long ______ married?",
+                options: ["are you", "have you been", "did you be"],
+                correct: 1,
+                explanation: "Use Present Perfect with 'How long' for actions starting in the past and continuing now."
+            },
+            {
+                id: '9-4', unit: '9', category: 'For/Since',
+                text: "She's had her car ______ three weeks.",
+                options: ["since", "for", "from"],
+                correct: 1,
+                explanation: "Use 'for' with a period of time (three weeks)."
+            },
+
+            // UNIT 10: Passive & Phrasal Verbs (from image_a284f8.jpg)
+            {
+                id: '10-1', unit: '10', category: 'Passive Voice',
+                text: "The Eiffel Tower ______ in 1889.",
+                options: ["completed", "was completed", "is completed"],
+                correct: 1,
+                explanation: "Past Passive: was/were + past participle. The tower didn't do the action itself."
+            },
+            {
+                id: '10-2', unit: '10', category: 'Phrasal Verbs',
+                text: "I can't hear the radio. Turn it ______.",
+                options: ["on", "up", "off"],
+                correct: 1,
+                explanation: "Turn up = increase volume."
+            },
+            {
+                id: '10-3', unit: '10', category: 'Movement',
+                text: "He walked ______ the cafe and ordered lunch.",
+                options: ["into", "out of", "through"],
+                correct: 0,
+                explanation: "Into suggests movement from outside to inside."
+            },
+
+            // UNIT 11: Used to & So/Neither (from image_a284d9.jpg)
+            {
+                id: '11-1', unit: '11', category: 'Used to',
+                text: "He ______ have long hair, but now he's bald.",
+                options: ["use to", "used to", "usually"],
+                correct: 1,
+                explanation: "'Used to' describes a past habit or state that is no longer true."
+            },
+            {
+                id: '11-2', unit: '11', category: 'So/Neither',
+                text: "A: I love chocolate. B: So ______ I.",
+                options: ["am", "do", "have"],
+                correct: 1,
+                explanation: "Use the auxiliary verb from the first sentence (Present Simple 'love' -> 'do')."
+            },
+            {
+                id: '11-3', unit: '11', category: 'So/Neither',
+                text: "A: I didn't go out last night. B: Neither ______ I.",
+                options: ["did", "do", "didn't"],
+                correct: 0,
+                explanation: "Use 'Neither did I' to agree with a negative statement in the past."
+            },
+
+            // UNIT 12: Past Perfect & Reported Speech (from image_a284bd.jpg)
+            {
+                id: '12-1', unit: '12', category: 'Past Perfect',
+                text: "When I arrived at the station, the train ______.",
+                options: ["left", "has left", "had left"],
+                correct: 2,
+                explanation: "Past Perfect (had + pp) is used for an action that happened *before* another past action."
+            },
+            {
+                id: '12-2', unit: '12', category: 'Reported Speech',
+                text: "Direct: 'I love you.' -> Reported: He told her that he ______ her.",
+                options: ["loves", "loved", "had loved"],
+                correct: 1,
+                explanation: "In reported speech, Present Simple usually changes to Past Simple (Backshift)."
+            },
+            {
+                id: '12-3', unit: '12', category: 'Reported Speech',
+                text: "Direct: 'I'll call the doctor.' -> Reported: He said he ______ the doctor.",
+                options: ["called", "would call", "will call"],
+                correct: 1,
+                explanation: "'Will' changes to 'would' in reported speech."
+            },
+            
+            // --- NEW QUESTIONS ADDED ---
+
+            // UNIT 7 EXTRA
+            {
+                id: '7-5', unit: '7', category: 'Infinitives',
+                text: "He decided ______ for a new job.",
+                options: ["look", "to look", "looking"],
+                correct: 1,
+                explanation: "'Decide' is followed by the infinitive (to + verb)."
+            },
+            {
+                id: '7-6', unit: '7', category: 'Gerunds',
+                text: "Do you mind ______ the window?",
+                options: ["opening", "to open", "open"],
+                correct: 0,
+                explanation: "'Mind' is always followed by a gerund (-ing)."
+            },
+            {
+                id: '7-7', unit: '7', category: 'Gerunds',
+                text: "Please stop ______ that noise! I'm trying to work.",
+                options: ["make", "to make", "making"],
+                correct: 2,
+                explanation: "'Stop' + gerund means to quit an action. 'Stop' + infinitive means to pause to do something else."
+            },
+
+            // UNIT 8 EXTRA
+            {
+                id: '8-4', unit: '8', category: '1st Conditional',
+                text: "If it rains, we ______ to the park.",
+                options: ["don't go", "won't go", "didn't go"],
+                correct: 1,
+                explanation: "First Conditional result clause uses 'will' or 'won't'."
+            },
+            {
+                id: '8-5', unit: '8', category: 'Should',
+                text: "You ______ speak loudly in the library.",
+                options: ["should", "shouldn't", "don't have to"],
+                correct: 1,
+                explanation: "Use 'shouldn't' for advice about things that are wrong or impolite."
+            },
+            {
+                id: '8-6', unit: '8', category: '1st Conditional',
+                text: "What will you do if you ______ the bus?",
+                options: ["miss", "will miss", "missed"],
+                correct: 0,
+                explanation: "The 'if' clause in First Conditional uses Present Simple."
+            },
+
+            // UNIT 9 EXTRA
+            {
+                id: '9-5', unit: '9', category: '2nd Conditional',
+                text: "If I were rich, I ______ travel the world.",
+                options: ["will", "would", "did"],
+                correct: 1,
+                explanation: "Second Conditional (imaginary) uses 'would' in the result clause."
+            },
+            {
+                id: '9-6', unit: '9', category: 'For/Since',
+                text: "We've lived here ______ 10 years.",
+                options: ["since", "for", "ago"],
+                correct: 1,
+                explanation: "Use 'for' with a duration of time (10 years)."
+            },
+            {
+                id: '9-7', unit: '9', category: 'Present Perfect',
+                text: "She hasn't ______ her homework yet.",
+                options: ["finish", "finished", "finishing"],
+                correct: 1,
+                explanation: "Present Perfect uses 'have/has' + past participle."
+            },
+
+            // UNIT 10 EXTRA
+            {
+                id: '10-4', unit: '10', category: 'Passive Voice',
+                text: "Many movies ______ in Hollywood.",
+                options: ["filmed", "are filmed", "are filming"],
+                correct: 1,
+                explanation: "Present Passive: am/is/are + past participle. Movies receive the action."
+            },
+            {
+                id: '10-5', unit: '10', category: 'Phrasal Verbs',
+                text: "I'm looking ______ my keys. Have you seen them?",
+                options: ["for", "after", "through"],
+                correct: 0,
+                explanation: "Look for = try to find something."
+            },
+            {
+                id: '10-6', unit: '10', category: 'Passive Voice',
+                text: "The Mona Lisa ______ by Da Vinci.",
+                options: ["painted", "is painted", "was painted"],
+                correct: 2,
+                explanation: "Past Passive: It happened in the past and the subject received the action."
+            },
+
+            // UNIT 11 EXTRA
+            {
+                id: '11-4', unit: '11', category: 'Used to',
+                text: "I didn't ______ like spinach, but now I do.",
+                options: ["used to", "use to", "usually"],
+                correct: 1,
+                explanation: "In negative sentences, use 'didn't use to' (drop the 'd')."
+            },
+            {
+                id: '11-5', unit: '11', category: 'So/Neither',
+                text: "A: I'm tired. B: So ______ I.",
+                options: ["am", "do", "was"],
+                correct: 0,
+                explanation: "Match the 'be' verb from the first sentence."
+            },
+            {
+                id: '11-6', unit: '11', category: 'So/Neither',
+                text: "A: I can't swim. B: Neither ______ I.",
+                options: ["do", "can't", "can"],
+                correct: 2,
+                explanation: "Use 'Neither + auxiliary + subject'. The negative is in 'Neither', so use the positive auxiliary 'can'."
+            },
+
+            // UNIT 12 EXTRA
+            {
+                id: '12-4', unit: '12', category: 'Past Perfect',
+                text: "We couldn't get a table because we ______ booked.",
+                options: ["hasn't", "hadn't", "didn't"],
+                correct: 1,
+                explanation: "Past Perfect negative: hadn't + past participle."
+            },
+            {
+                id: '12-5', unit: '12', category: 'Reported Speech',
+                text: "Direct: 'I am reading.' -> Reported: She said she ______ reading.",
+                options: ["is", "was", "been"],
+                correct: 1,
+                explanation: "Present Continuous 'am reading' changes to Past Continuous 'was reading'."
+            },
+            {
+                id: '12-6', unit: '12', category: 'Reported Speech',
+                text: "Direct: 'I have finished.' -> Reported: He said he ______ finished.",
+                options: ["has", "had", "have"],
+                correct: 1,
+                explanation: "Present Perfect 'have finished' changes to Past Perfect 'had finished'."
+            }
+        ];
+
+        // --- App State ---
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userMistakes = [];
+        let currentMode = 'all';
+
+        // --- DOM Elements ---
+        const screens = {
+            start: document.getElementById('start-screen'),
+            topic: document.getElementById('topic-screen'),
+            quiz: document.getElementById('quiz-screen'),
+            result: document.getElementById('result-screen')
+        };
+        const els = {
+            questionText: document.getElementById('q-text'),
+            optionsContainer: document.getElementById('options-container'),
+            progressBar: document.getElementById('progress-bar'),
+            qNumber: document.getElementById('q-number'),
+            qCategory: document.getElementById('q-category'),
+            nextBtn: document.getElementById('next-btn'),
+            feedback: document.getElementById('feedback'),
+            feedbackTitle: document.getElementById('feedback-title'),
+            feedbackText: document.getElementById('feedback-text'),
+            feedbackIcon: document.getElementById('feedback-icon'),
+            scoreDisplay: document.getElementById('score-display'),
+            currentScore: document.getElementById('current-score'),
+            finalScore: document.getElementById('final-score'),
+            finalMsg: document.getElementById('final-msg'),
+            scoreCircle: document.getElementById('score-circle'),
+            mistakesContainer: document.getElementById('mistakes-container'),
+            mistakesList: document.getElementById('mistakes-list')
+        };
+
+        // --- Functions ---
+
+        function showScreen(screenName) {
+            Object.values(screens).forEach(s => s.classList.add('hidden'));
+            Object.values(screens).forEach(s => s.classList.remove('flex')); // clean up flex
+            
+            const target = screens[screenName];
+            target.classList.remove('hidden');
+            target.classList.add('flex');
+            target.classList.add('fade-in');
+        }
+
+        function showTopics() {
+            showScreen('topic');
+        }
+
+        function goHome() {
+            showScreen('start');
+        }
+
+        function resetApp() {
+            score = 0;
+            currentQuestionIndex = 0;
+            userMistakes = [];
+            els.scoreDisplay.classList.add('hidden');
+            showScreen('start');
+        }
+
+        function startQuiz(mode) {
+            currentMode = mode;
+            score = 0;
+            currentQuestionIndex = 0;
+            userMistakes = [];
+            els.currentScore.innerText = 0;
+            els.scoreDisplay.classList.remove('hidden');
+
+            // Filter questions
+            if (mode === 'all') {
+                currentQuestions = [...allQuestions].sort(() => 0.5 - Math.random()); // Shuffle
+            } else {
+                currentQuestions = allQuestions.filter(q => q.unit === mode).sort(() => 0.5 - Math.random());
+            }
+
+            if (currentQuestions.length === 0) {
+                alert("No questions found for this category.");
+                return;
+            }
+
+            showScreen('quiz');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = currentQuestions[currentQuestionIndex];
+            
+            // UI Updates
+            els.questionText.innerText = q.text;
+            els.qCategory.innerText = `UNIT ${q.unit} • ${q.category}`;
+            els.qNumber.innerText = `${currentQuestionIndex + 1}/${currentQuestions.length}`;
+            
+            // Progress Bar
+            const progress = ((currentQuestionIndex) / currentQuestions.length) * 100;
+            els.progressBar.style.width = `${progress}%`;
+
+            // Clear previous state
+            els.optionsContainer.innerHTML = '';
+            els.feedback.classList.add('hidden');
+            els.nextBtn.classList.add('hidden');
+            
+            // Create buttons
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = "option-btn w-full text-left p-4 rounded-xl border-2 border-slate-200 hover:border-blue-300 hover:bg-blue-50 font-medium text-slate-700 transition relative";
+                btn.innerHTML = `<span class="inline-block w-6 h-6 rounded-full bg-slate-100 text-slate-500 text-xs flex items-center justify-center mr-3 border border-slate-300 font-bold">${String.fromCharCode(65+index)}</span> ${opt}`;
+                btn.onclick = () => checkAnswer(index, btn);
+                els.optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedIndex, btn) {
+            const q = currentQuestions[currentQuestionIndex];
+            const buttons = els.optionsContainer.querySelectorAll('button');
+            
+            // Disable all buttons
+            buttons.forEach(b => {
+                b.disabled = true;
+                b.classList.remove('hover:bg-blue-50', 'hover:border-blue-300');
+            });
+
+            const isCorrect = selectedIndex === q.correct;
+
+            // Highlight Logic
+            if (isCorrect) {
+                score++;
+                els.currentScore.innerText = score;
+                btn.classList.remove('border-slate-200');
+                btn.classList.add('bg-green-100', 'border-green-500', 'text-green-800');
+                btn.querySelector('span').classList.add('bg-green-200', 'text-green-700', 'border-green-400');
+                
+                showFeedback(true, "Correct!", q.explanation);
+                triggerConfetti(0.3); // Small confetti
+            } else {
+                userMistakes.push(q);
+                btn.classList.remove('border-slate-200');
+                btn.classList.add('bg-red-100', 'border-red-500', 'text-red-800');
+                btn.querySelector('span').classList.add('bg-red-200', 'text-red-700', 'border-red-400');
+                
+                // Highlight correct one
+                const correctBtn = buttons[q.correct];
+                correctBtn.classList.remove('border-slate-200');
+                correctBtn.classList.add('bg-green-50', 'border-green-500', 'text-green-800');
+                
+                showFeedback(false, "Incorrect", q.explanation);
+            }
+
+            els.nextBtn.classList.remove('hidden');
+            els.nextBtn.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+
+        function showFeedback(isCorrect, title, text) {
+            els.feedback.classList.remove('hidden', 'bg-green-50', 'border-green-500', 'text-green-800', 'bg-red-50', 'border-red-500', 'text-red-800');
+            els.feedbackIcon.className = isCorrect ? "fas fa-check-circle mt-1 mr-3 text-xl" : "fas fa-times-circle mt-1 mr-3 text-xl";
+            
+            if (isCorrect) {
+                els.feedback.classList.add('bg-green-50', 'border-green-500', 'text-green-800');
+            } else {
+                els.feedback.classList.add('bg-red-50', 'border-red-500', 'text-red-800');
+            }
+
+            els.feedbackTitle.innerText = title;
+            els.feedbackText.innerText = text;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < currentQuestions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            showScreen('result');
+            els.scoreDisplay.classList.add('hidden');
+            
+            const total = currentQuestions.length;
+            const percentage = Math.round((score / total) * 100);
+            
+            // Animate Score Circle
+            const circumference = 2 * Math.PI * 60;
+            const offset = circumference - (percentage / 100) * circumference;
+            setTimeout(() => {
+                els.scoreCircle.style.strokeDashoffset = offset;
+            }, 100);
+            
+            els.finalScore.innerText = `${percentage}%`;
+            
+            // Dynamic Message
+            if (percentage === 100) {
+                els.finalMsg.innerText = "Perfect Score! You are ready!";
+                triggerConfetti(1); // Big confetti
+            } else if (percentage >= 80) {
+                els.finalMsg.innerText = "Excellent work!";
+                triggerConfetti(0.5);
+            } else if (percentage >= 60) {
+                els.finalMsg.innerText = "Good job, but review your mistakes.";
+            } else {
+                els.finalMsg.innerText = "Keep practicing, you can do it!";
+            }
+
+            // Show Mistakes
+            if (userMistakes.length > 0) {
+                els.mistakesContainer.classList.remove('hidden');
+                els.mistakesList.innerHTML = '';
+                userMistakes.forEach(m => {
+                    const item = document.createElement('div');
+                    item.className = "bg-white p-3 rounded-lg border border-red-100 shadow-sm text-sm";
+                    item.innerHTML = `
+                        <div class="font-bold text-slate-700 mb-1">Unit ${m.unit}: ${m.category}</div>
+                        <div class="text-slate-600 mb-1">${m.text}</div>
+                        <div class="text-green-600 font-semibold">Correct: ${m.options[m.correct]}</div>
+                    `;
+                    els.mistakesList.appendChild(item);
+                });
+            } else {
+                els.mistakesContainer.classList.add('hidden');
+            }
+        }
+
+        function triggerConfetti(intensity) {
+            var count = 200 * intensity;
+            var defaults = {
+                origin: { y: 0.7 }
+            };
+
+            function fire(particleRatio, opts) {
+                confetti(Object.assign({}, defaults, opts, {
+                    particleCount: Math.floor(count * particleRatio)
+                }));
+            }
+
+            fire(0.25, { spread: 26, startVelocity: 55 });
+            fire(0.2, { spread: 60 });
+            fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+            fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+            fire(0.1, { spread: 120, startVelocity: 45 });
+        }
+
+    </script>
+</body>
+</html>
